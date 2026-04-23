@@ -1,0 +1,71 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+
+    background:
+        radial-gradient(circle at 20% 40%, rgba(88,28,135,0.95), transparent 35%),
+        linear-gradient(90deg,#0b031a,#000);
+}
+
+/* NAV */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 60px;
+}
+
+.logo-text {
+    font-weight: 700;
+}
+
+.nav-right {
+    display: flex;
+    gap: 15px;
+}
+
+/* KPI */
+.kpi {
+    display: flex;
+    gap: 20px;
+    padding: 20px 60px;
+}
+
+.card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 15px;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+}
+
+/* GRAPH */
+.graphs {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 20px;
+    padding: 20px 60px;
+}
+
+.large {
+    grid-column: span 2;
+}
+
+/* TABLE */
+.table-section {
+    padding: 20px 60px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+}
+
+tr {
+    background: rgba(255,255,255,0.05);
+}

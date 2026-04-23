@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detail</title>
+</head>
+<body>
+
+<h2>IP Detail</h2>
+
+<h3 th:text="${ip}"></h3>
+
+<table border="1">
+    <tr>
+        <th>Timestamp</th>
+        <th>Freq</th>
+        <th>Failed</th>
+        <th>Ports</th>
+        <th>Score</th>
+        <th>Risk</th>
+        <th>TI</th>
+    </tr>
+
+    <tr th:each="d : ${data}">
+        <td th:text="${d.timestamp}"></td>
+        <td th:text="${d.request_freq}"></td>
+        <td th:text="${d.failed_ratio}"></td>
+        <td th:text="${d.unique_ports}"></td>
+        <td th:text="${d.anomaly_score}"></td>
+        <td th:text="${d.risk_score}"></td>
+        <td th:text="${d.ti_label}"></td>
+    </tr>
+
+</table>
+
+</body>
+</html>

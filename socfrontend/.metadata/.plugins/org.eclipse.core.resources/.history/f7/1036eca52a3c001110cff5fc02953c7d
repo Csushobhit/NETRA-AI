@@ -1,0 +1,5 @@
+package com.soc.socfrontend.controller;
+
+public class AdminUIController {
+
+}

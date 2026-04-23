@@ -1,0 +1,5 @@
+package com.soc.socfrontend.service;
+
+public class AdminService {
+
+}

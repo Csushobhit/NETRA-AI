@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Alerts</title>
+</head>
+<body>
+
+<h2>Alerts</h2>
+
+<div>
+    <a href="/dashboard">Back to Dashboard</a>
+</div>
+
+<form method="get" action="/alerts">
+    <label>Filter:</label>
+    <select name="filter">
+        <option value="">All</option>
+        <option value="suspicious">Suspicious</option>
+    </select>
+
+    <label>Hours:</label>
+    <input type="number" name="hours" min="1" />
+
+    <button type="submit">Apply</button>
+</form>
+
+<table border="1">
+
+    <thead>
+        <tr>
+            <th>IP</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Recommended Action</th>
+            <th>TI Status</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr th:each="a : ${alerts}">
+
+            <td th:text="${a['ip']}"></td>
+
+            <td th:text="${a['timestamp']}"></td>
+
+            <td th:text="${a['risk_score'] >= 70 ? 'High Risk' : (a['risk_score'] >= 40 ? 'Suspicious' : 'Normal')}"></td>
+
+            <td th:text="${a['action']}"></td>
+
+            <td th:text="${a['ti_label'] != null ? a['ti_label'] : 'Not Checked'}"></td>
+
+            <td>
+                <a th:href="@{'/detail/' + ${a['ip']}}">View</a>
+            </td>
+
+        </tr>
+    </tbody>
+
+</table>
+
+</body>
+</html>

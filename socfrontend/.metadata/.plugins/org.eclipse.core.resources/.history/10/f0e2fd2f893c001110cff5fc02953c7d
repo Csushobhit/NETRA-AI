@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NETRA-AI — Bulk TI Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <style>
+        /* ── PAGE HEADER ── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .page-header-left h1 {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+
+        .page-header-left h1 span {
+            background: linear-gradient(90deg, #a78bfa, #22d3ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        body.light .page-header-left h1 span {
+            background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header-left p {
+            font-size: 12.5px;
+            margin-top: 3px;
+            color: #94a3b8;
+        }
+
+        body.light .page-header-left p { color: #64748b; }
+
+        /* Back button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-bd);
+            background: var(--glass-bg);
+            color: inherit;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            backdrop-filter: blur(14px);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.10);
+            transform: translateX(-3px);
+        }
+        body.light .back-btn { background: rgba(255,255,255,0.55); color: #1e293b; }
+
+        /* ── SUMMARY STRIP ── */
+        .summary-strip {
+            display: flex;
+            gap: 14px;
+        }
+
+        .summary-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .pill-total    { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.3); color: #a78bfa; }
+        .pill-malicious{ background: rgba(239,68,68,0.12);   border-color: rgba(239,68,68,0.3);   color: #f87171; }
+        .pill-clean    { background: rgba(34,197,94,0.10);   border-color: rgba(34,197,94,0.28);  color: #4ade80; }
+
+        /* ── RESULTS TABLE ── */
+        .results-wrapper {
+            padding: 26px 28px 24px;
+            animation: fadeUp 0.5s 0.1s ease both;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table thead th {
+            text-align: left;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #6b7280;
+            padding: 0 14px 14px;
+            border-bottom: 1px solid var(--glass-bd);
+        }
+
+        .results-table tbody tr { transition: background 0.18s; }
+        .results-table tbody tr:hover { background: rgba(255,255,255,0.04); }
+        body.light .results-table tbody tr:hover { background: rgba(0,0,0,0.03); }
+
+        .results-table tbody td {
+            padding: 14px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255,255,255,0.048);
+            vertical-align: top;
+        }
+        body.light .results-table tbody td { border-bottom: 1px solid rgba(0,0,0,0.055); }
+
+        /* IP cell */
+        .ip-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #67e8f9;
+            letter-spacing: 0.3px;
+        }
+        body.light .ip-cell { color: #0284c7; }
+
+        /* Confidence bar */
+        .conf-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .conf-bar-bg {
+            flex: 1;
+            height: 6px;
+            border-radius: 99px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+
+        .conf-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.6s ease;
+        }
+
+        .conf-pct {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 36px;
+            text-align: right;
+            color: #94a3b8;
+        }
+
+        /* Justification cell */
+        .justification {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.55;
+            max-width: 420px;
+        }
+        body.light .justification { color: #64748b; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+        /* Table section header */
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .results-header h3 {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: #94a3b8;
+        }
+        body.light .results-header h3 { color: #64748b; }
+
+        /* Count badge */
+        .count-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 50px;
+            background: rgba(124,58,237,0.12);
+            border: 1px solid rgba(124,58,237,0.3);
+            color: #a78bfa;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════ -->
+<nav class="nav">
+    <a class="logo-text" href="/dashboard">NETRA-AI</a>
+
+    <div class="nav-right">
+        <div class="nav-icons">
+            <span title="Analytics">📊</span>
+            <span title="Notifications">🔔</span>
+            <span title="Settings">⚙️</span>
+        </div>
+
+        <div class="user-badge">
+            <span class="user-icon-char" th:text="${isAdmin} ? '👑' : '👤'">👤</span>
+            <span th:text="${username} ?: 'User'">User</span>
+        </div>
+
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <div class="toggle-circle" id="toggleCircle">🌙</div>
+        </div>
+    </div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     MAIN CONTENT
+════════════════════════════════════════════ -->
+<main class="dashboard">
+
+    <!-- ── PAGE HEADER ── -->
+    <section class="page-header">
+        <div class="page-header-left">
+            <h1>Bulk TI <span>Results</span></h1>
+            <p>Threat intelligence analysis for selected IP addresses</p>
+        </div>
+        <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+    </section>
+
+    <!-- ── SUMMARY PILLS ── -->
+    <section class="summary-strip">
+        <div class="summary-pill pill-total">
+            🔍 Total Scanned: <span th:text="${results != null ? results.size() : 0}">0</span>
+        </div>
+        <div class="summary-pill pill-malicious">
+            ⚠ Malicious: <span th:text="${results != null ? #lists.size(results.?[label == 'malicious']) : 0}">0</span>
+        </div>
+        <div class="summary-pill pill-clean">
+            ✔ Clean: <span th:text="${results != null ? #lists.size(results.?[label == 'clean']) : 0}">0</span>
+        </div>
+    </section>
+
+    <!-- ── RESULTS TABLE ── -->
+    <section class="card results-wrapper">
+
+        <div class="results-header">
+            <h3>TI Analysis Report</h3>
+            <span class="count-badge" th:text="${results != null ? results.size() + ' IPs' : '0 IPs'}">0 IPs</span>
+        </div>
+
+        <!-- Empty state -->
+        <div th:if="${results == null or results.isEmpty()}" class="empty-state">
+            <div class="empty-icon">🛡️</div>
+            <p>No results to display. Select IPs from the dashboard and run Bulk TI.</p>
+        </div>
+
+        <!-- Results table -->
+        <table th:if="${results != null and !results.isEmpty()}" class="results-table">
+            <thead>
+                <tr>
+                    <th style="width: 160px;">IP Address</th>
+                    <th style="width: 130px;">TI Label</th>
+                    <th style="width: 180px;">Confidence</th>
+                    <th>Agent Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${results}">
+
+                    <!-- IP -->
+                    <td class="ip-cell" th:text="${r.ip}">192.168.0.1</td>
+
+                    <!-- Label badge -->
+                    <td>
+                        <span th:if="${r.label == 'malicious'}" class="risk-badge risk-high">⚠ Malicious</span>
+                        <span th:if="${r.label == 'clean'}"     class="risk-badge risk-low">✔ Clean</span>
+                        <span th:if="${r.label != 'malicious' and r.label != 'clean'}"
+                              class="risk-badge risk-medium" th:text="${r.label}">Unknown</span>
+                    </td>
+
+                    <!-- Confidence bar -->
+                    <td>
+                        <div class="conf-wrap">
+                            <div class="conf-bar-bg">
+                                <div class="conf-bar-fill"
+                                     th:style="'width:' + ${r.confidence} + '%;' +
+                                               'background:' + (${r.label == 'malicious'} ? '#ef4444' :
+                                                               (${r.label == 'clean'} ? '#22c55e' : '#f59e0b')) + ';'">
+                                </div>
+                            </div>
+                            <span class="conf-pct" th:text="${r.confidence} + '%'">0%</span>
+                        </div>
+                    </td>
+
+                    <!-- Justification -->
+                    <td>
+                        <div class="justification" th:text="${r.justification} ?: 'No justification provided.'">
+                            No justification provided.
+                        </div>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+
+    </section>
+
+</main>
+
+<script>
+/* ── THEME TOGGLE ── */
+let dark = true;
+
+function toggleTheme() {
+    dark = !dark;
+    const circle = document.getElementById('toggleCircle');
+    if (!dark) {
+        document.body.classList.add('light');
+        circle.innerHTML = '☀️';
+        circle.style.transform = 'translateX(30px)';
+    } else {
+        document.body.classList.remove('light');
+        circle.innerHTML = '🌙';
+        circle.style.transform = 'translateX(0)';
+    }
+}
+</script>
+
+</body>
+</html>

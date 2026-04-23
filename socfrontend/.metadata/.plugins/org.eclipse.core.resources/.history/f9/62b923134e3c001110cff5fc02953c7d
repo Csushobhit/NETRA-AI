@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+
+<h2>Dashboard</h2>
+
+<div>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+
+<div>
+    <h3>Stats</h3>
+
+    <div>
+        <a th:href="@{/alerts}">
+            Total IPs: <span th:text="${stats.total}"></span>
+        </a>
+    </div>
+
+    <div>
+        <a th:href="@{/alerts(filter='suspicious')}">
+            Suspicious: <span th:text="${stats.suspicious}"></span>
+        </a>
+    </div>
+
+    <div>
+        <a th:href="@{/alerts}">
+            Normal: <span th:text="${stats.normal}"></span>
+        </a>
+    </div>
+
+    <div>
+        <a th:href="@{/alerts}">
+            TI Malicious: <span th:text="${stats.ti_malicious}"></span>
+        </a>
+    </div>
+
+</div>
+<h3>Search Threat Intelligence</h3>
+
+<form action="/search-ti" method="get">
+    <input type="text" name="ip" placeholder="Enter IP" required />
+    <button type="submit">Search TI</button>
+</form>
+
+<div th:if="${isAdmin}">
+    <h3>Admin</h3>
+    <a href="/admin/pending">User Approvals</a>
+</div>
+<div th:if="${isAdmin}">
+    <h3>Admin Panel</h3>
+    <a href="/admin-ui/ti">TI Control</a><br>
+    <a href="/admin-ui/audit">Audit Logs</a><br>
+    <a href="/admin-ui/keys">Update API Keys</a>
+</div>
+
+</body>
+</html>

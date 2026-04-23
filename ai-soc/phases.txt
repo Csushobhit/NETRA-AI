@@ -1,0 +1,82 @@
+Phase 1: Foundation (Data Layer)
+1. Log Generator
+ Define log format (ip, timestamp, event_type, status, port)
+ Implement NORMAL mode
+ Implement ATTACK modes:
+ brute force
+ traffic spike
+ port scan
+ Add continuous generation (loop + delay)
+ Write to CSV (initial)
+2. Log Reader (Ingestion)
+ Read logs continuously
+ Track last processed row
+ Fetch only new logs
+ Group logs per IP + time window
+Phase 2: Feature Engineering
+ Compute:
+ request frequency
+ failed login ratio
+ unique ports
+ off-hour activity
+ Maintain per-IP state (important)
+Phase 3: ML (Weak Signal)
+ Train Isolation Forest (basic)
+ Input: feature vectors
+ Output: anomaly score
+ Integrate into pipeline (no decision logic here)
+Phase 4: Multi-Agent System (Core)
+1. Investigation Agent
+ Input: features + logs + memory + ML score
+ Output: attack type + reasoning
+2. Decision Agent
+ Assign risk score (0–100)
+ Decide action (block / monitor / ignore)
+3. Explanation Agent
+ Convert output → human-readable format
+Phase 5: Memory System
+
+ Design schema:
+
+ip, features, decision, risk, user_feedback
+ Store feedback
+ Retrieve similar past cases
+ Pass memory into agents
+Phase 6: Threat Intelligence (Old Project Rebuild)
+ Internal DB (known malicious IPs)
+ Integrate:
+ Maltrail data
+ MISP API
+ AlienVault OTX API (optional)
+ Return:
+malicious / clean / unknown
+Phase 7: Integration Logic
+ Combine:
+agent risk
+threat intel result
+ Final risk calculation
+ Override logic if needed
+Phase 8: Streamlit UI
+Dashboard
+ total alerts
+ risk distribution
+ suspicious IP list
+Alert View
+ IP details
+ risk score
+ reasoning
+ timeline
+Actions
+ “Run Threat Intel Check” button
+ feedback buttons (true/false)
+Phase 9: Feedback Loop
+ Capture user feedback
+ Store in memory
+ Use in agent reasoning
+Phase 10: Demo Flow (Final Polish)
+ Normal logs → no alerts
+ Trigger attack → alert appears
+ Show reasoning
+ Run threat intel
+ Show final verdict
+ Give feedback

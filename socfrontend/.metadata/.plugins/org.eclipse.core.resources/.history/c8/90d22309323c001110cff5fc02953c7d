@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detail</title>
+</head>
+<body>
+
+<h2>IP Detail</h2>
+
+<div>
+    <a href="/alerts">Back to Alerts</a>
+</div>
+
+<h3 th:text="${ip}"></h3>
+
+<table border="1">
+    <tr>
+        <th>Timestamp</th>
+        <th>Freq</th>
+        <th>Failed</th>
+        <th>Ports</th>
+        <th>Score</th>
+        <th>Risk</th>
+        <th>TI</th>
+    </tr>
+
+    <tr th:each="d : ${data}">
+        <td th:text="${d.timestamp}"></td>
+        <td th:text="${d.request_freq}"></td>
+        <td th:text="${d.failed_ratio}"></td>
+        <td th:text="${d.unique_ports}"></td>
+        <td th:text="${d.anomaly_score}"></td>
+        <td th:text="${d.risk_score}"></td>
+        <td th:text="${d.ti_label}"></td>
+    </tr>
+</table>
+
+<hr>
+
+<h3>Run Threat Intelligence</h3>
+
+<form method="post" action="/run-ti">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <input type="hidden" name="ip" th:value="${ip}" />
+    <button type="submit">Run TI</button>
+</form>
+
+<hr>
+
+<h3>Feedback</h3>
+
+<form method="post" action="/feedback">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <input type="hidden" name="ip" th:value="${ip}" />
+
+    <button type="submit" name="feedback" value="correct">Correct</button>
+    <button type="submit" name="feedback" value="incorrect">Incorrect</button>
+    <button type="submit" name="feedback" value="unknown">Unknown</button>
+</form>
+
+</body>
+</html>

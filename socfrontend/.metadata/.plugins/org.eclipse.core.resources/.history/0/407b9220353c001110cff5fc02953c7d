@@ -1,0 +1,116 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: black;
+    overflow: hidden;
+}
+
+/* BACKGROUND */
+.background {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: url('/images/blob.png') no-repeat center bottom;
+    background-size: 900px;
+    filter: blur(20px);
+    opacity: 0.9;
+    z-index: -2;
+}
+
+/* LIGHT OVERLAY */
+body::before {
+    content: "";
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 60%);
+    z-index: -1;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 60px;
+}
+
+.nav-links a {
+    margin: 0 10px;
+    color: #aaa;
+    font-size: 14px;
+}
+
+.auth-buttons button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+}
+
+.login-btn {
+    background: transparent;
+    color: white;
+}
+
+.signup-btn {
+    background: white;
+    color: black;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    margin-top: 120px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    font-weight: 600;
+}
+
+.hero p {
+    color: #aaa;
+    margin-top: 15px;
+}
+
+.cta-btn {
+    margin-top: 20px;
+    padding: 12px 28px;
+    border-radius: 25px;
+    background: white;
+    color: black;
+    border: none;
+}
+
+/* LOGIN CARD */
+.login-card {
+    position: absolute;
+    bottom: 80px;
+    left: 60px;
+    width: 260px;
+    padding: 20px;
+
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+    backdrop-filter: blur(15px);
+
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+.login-card input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+.login-card button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: white;
+    color: black;
+}

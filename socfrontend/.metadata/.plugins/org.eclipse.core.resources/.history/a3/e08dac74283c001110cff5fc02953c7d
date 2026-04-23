@@ -1,0 +1,72 @@
+package com.soc.socfrontend.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.soc.socfrontend.repository.UserRepository;
+
+@Configuration
+public class SecurityConfig {
+
+    private final UserRepository repo;
+
+    public SecurityConfig(UserRepository repo) {
+        this.repo = repo;
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            var user = repo.findByUsername(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+            if (!"APPROVED".equals(user.getStatus())) {
+                throw new UsernameNotFoundException("User not approved");
+            }
+
+            return User.builder()
+                    .username(user.getUsername())
+                    .password(user.getPassword())
+                    .roles(user.getRole())
+                    .build();
+        };
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    public org.springframework.security.web.SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth", "/register", "/login").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .formLogin(login -> login
+                .loginPage("/auth")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/admin/pending", true)
+                .failureUrl("/auth?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout.permitAll());
+
+        return http.build();
+    }
+}

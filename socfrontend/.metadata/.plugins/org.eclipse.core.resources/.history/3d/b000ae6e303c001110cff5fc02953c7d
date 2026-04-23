@@ -1,0 +1,77 @@
+package com.soc.socfrontend.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import com.soc.socfrontend.service.BackendService;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.security.core.Authentication;
+
+@Controller
+public class DashboardController {
+
+    private final BackendService backend;
+
+    public DashboardController(BackendService backend) {
+        this.backend = backend;
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(Model model, Authentication auth) {
+
+        Map stats = backend.getDashboardStats();
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        model.addAttribute("stats", stats);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "dashboard";
+    }
+
+    @GetMapping("/alerts")
+    public String alerts(
+            @RequestParam(required = false) String filter,
+            @RequestParam(required = false) Integer hours,
+            Model model) {
+
+        model.addAttribute("alerts", backend.getAlerts(filter, hours));
+        return "alerts";
+    }
+
+    @GetMapping("/detail/{ip}")
+    public String detail(@PathVariable String ip, Model model) {
+        model.addAttribute("data", backend.getDetails(ip));
+        model.addAttribute("ip", ip);
+        return "detail";
+    }
+    
+    @PostMapping("/run-ti")
+    public String runTI(@RequestParam String ip, Model model) {
+        model.addAttribute("ti", backend.runTI(ip));
+        return "ti_result";
+    }
+
+    @PostMapping("/bulk-ti")
+    public String bulkTI(@RequestParam List<String> ips, Model model) {
+        model.addAttribute("results", backend.bulkTI(ips));
+        return "ti_bulk";
+    }
+
+    @GetMapping("/search-ti")
+    public String searchTI(@RequestParam String ip, Model model) {
+        model.addAttribute("ti", backend.searchTI(ip));
+        return "ti_result";
+    }
+
+    @PostMapping("/feedback")
+    public String feedback(@RequestParam String ip, @RequestParam String feedback) {
+        backend.sendFeedback(ip, feedback);
+        return "redirect:/detail/" + ip;
+    }
+}

@@ -1,0 +1,239 @@
+/* ===== GLOBAL FIXES ===== */
+
+html, body {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+}
+
+/* MAIN WRAPPER */
+.dashboard {
+    padding: 30px 80px;
+}
+
+/* ===== NAVBAR ===== */
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 80px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icons span {
+    opacity: 0.7;
+    font-size: 14px;
+}
+
+/* ===== WELCOME ===== */
+
+.welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 80px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+}
+
+.search-bar input {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    width: 220px;
+}
+
+.search-bar button {
+    margin-left: 10px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    cursor: pointer;
+}
+
+/* ===== KPI ===== */
+
+.kpi {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 30px 80px;
+}
+
+.card {
+    padding: 25px;
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* KPI TEXT */
+.card h4 {
+    font-size: 13px;
+    color: #aaa;
+}
+
+.card p {
+    font-size: 28px;
+    margin-top: 10px;
+}
+
+/* ===== GRAPHS ===== */
+
+.graphs {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    padding: 20px 80px;
+}
+
+.graphs .card {
+    height: 300px;
+}
+
+.graphs .card.large {
+    height: 320px;
+}
+
+/* ===== CANVAS FIX ===== */
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ===== FILTER ===== */
+
+.filters {
+    padding: 20px 80px;
+}
+
+.filters select {
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    border: none;
+}
+
+/* ===== TABLE ===== */
+
+.table-section {
+    padding: 20px 80px;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    font-size: 13px;
+    color: #aaa;
+    padding-bottom: 10px;
+}
+
+td {
+    padding: 14px 0;
+}
+
+tr {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* BUTTON */
+.table-section button {
+    padding: 6px 12px;
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    cursor: pointer;
+}
+
+/* BULK BUTTON */
+.table-section > form > button {
+    margin-top: 15px;
+}
+
+/* ===== USER DROPDOWN ===== */
+
+.user-menu {
+    position: relative;
+    cursor: pointer;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(20px);
+
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.user-menu:hover .dropdown {
+    display: block;
+}
+
+/* ===== LIGHT MODE ===== */
+
+body.light .card {
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.7);
+}
+
+body.light .search-bar input {
+    background: rgba(0,0,0,0.05);
+    color: black;
+}
+
+body.light .search-bar button {
+    background: rgba(0,0,0,0.05);
+    color: black;
+}
+
+body.light .filters select {
+    background: rgba(0,0,0,0.05);
+    color: black;
+}
+
+body.light th {
+    color: #555;
+}
+
+body.light tr:hover {
+    background: rgba(0,0,0,0.05);
+}

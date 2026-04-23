@@ -1,0 +1,7 @@
+ip,request_freq,failed_ratio,unique_ports,off_hour,decision,risk,feedback
+192.168.65.41,1,0.0,1,0,ignore,0,correct
+192.168.243.151,1,0.0,1,0,ignore,0,unknown
+192.168.76.205,1,0,1,0,ignore,0,correct
+192.168.68.34,1,0,1,0,ignore,0,unknown
+192.168.231.187,13,1.0,1,0,block,75,correct
+192.168.231.187,48,0.94,1,0,block,75,unknown

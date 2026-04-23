@@ -1,0 +1,147 @@
+/* USE AUTH AS BASE */
+
+.kpi {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 30px 100px;
+}
+
+.card {
+    padding: 25px;
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+/* LIGHT MODE */
+body.light .card {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.6);
+}
+
+/* KPI TEXT */
+.card h4 {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.card p {
+    font-size: 28px;
+    margin-top: 10px;
+}
+
+/* TOP BAR */
+.top-bar {
+    padding: 0 100px;
+    margin-top: 20px;
+}
+
+.top-bar input {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+
+    background: rgba(255,255,255,0.08);
+    color: white;
+}
+
+.top-bar button {
+    margin-left: 10px;
+    padding: 12px 20px;
+    border-radius: 12px;
+
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+
+    cursor: pointer;
+}
+
+/* GRAPHS */
+.graphs {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    padding: 20px 100px;
+}
+
+.large {
+    height: 200px;
+}
+
+/* TABLE */
+.table-section {
+    padding: 20px 100px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th {
+    text-align: left;
+    font-size: 13px;
+    color: #aaa;
+}
+
+td {
+    padding: 12px 0;
+}
+
+tr {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* BUTTON */
+.table-section button {
+    padding: 6px 12px;
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+
+/* BULK BUTTON */
+.table-section > form > button {
+    margin-top: 15px;
+}
+
+/* USER MENU */
+.user-menu {
+    position: relative;
+    cursor: pointer;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 30px;
+
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(20px);
+
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.user-menu:hover .dropdown {
+    display: block;
+}

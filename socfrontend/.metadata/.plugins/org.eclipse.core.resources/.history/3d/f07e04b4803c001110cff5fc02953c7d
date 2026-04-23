@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NETRA-AI — TI Result</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <style>
+        .ti-page { padding: 32px 48px 56px; display: flex; flex-direction: column; gap: 22px; max-width: 1100px; margin: 0 auto; }
+
+        /* ── HERO BANNER ── */
+        .ti-hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 28px 32px;
+        }
+        .ti-ip {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #67e8f9;
+            letter-spacing: 1px;
+        }
+        body.light .ti-ip { color: #0284c7; }
+        .ti-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-bd);
+            background: var(--glass-bg);
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+        }
+        .ti-back:hover { background: rgba(255,255,255,0.10); color: #e2e8f0; }
+
+        /* ── VERDICT CARD ── */
+        .verdict-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .verdict-main {
+            padding: 26px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .verdict-label-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .verdict-badge {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 5px 16px;
+            border-radius: 50px;
+            letter-spacing: 0.5px;
+        }
+        .verdict-malicious { background: rgba(239,68,68,0.16); color: #f87171; border: 1px solid rgba(239,68,68,0.32); }
+        .verdict-clean     { background: rgba(34,197,94,0.13);  color: #4ade80; border: 1px solid rgba(34,197,94,0.28); }
+        .verdict-unknown   { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.22); }
+        .verdict-suspicious{ background: rgba(245,158,11,0.14); color: #fbbf24; border: 1px solid rgba(245,158,11,0.28); }
+
+        .confidence-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+        .confidence-label { font-size: 10.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #6b7280; }
+        .confidence-bar {
+            height: 6px;
+            border-radius: 99px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            transition: width 1s ease;
+        }
+        .confidence-value { font-size: 20px; font-weight: 700; color: #a78bfa; }
+
+        .reasoning-text {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #94a3b8;
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--accent-1);
+            padding: 12px 16px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+        body.light .reasoning-text { color: #475569; background: rgba(0,0,0,0.03); }
+
+        /* ── SECTION CARDS ── */
+        .info-card { padding: 24px 28px; }
+
+        .info-card-title {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        body.light .info-card-title { color: #64748b; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.048);
+            gap: 16px;
+        }
+        body.light .info-row { border-bottom: 1px solid rgba(0,0,0,0.055); }
+        .info-row:last-child { border-bottom: none; }
+
+        .info-key {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .info-val {
+            font-size: 13px;
+            color: #e2e8f0;
+            text-align: right;
+            line-height: 1.5;
+        }
+        body.light .info-val { color: #1e293b; }
+        .info-val.mono { font-family: 'Courier New', monospace; font-size: 12.5px; color: #67e8f9; }
+        body.light .info-val.mono { color: #0284c7; }
+
+        /* ── METRICS GRID ── */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+        }
+        .metric-card {
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .metric-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: #a78bfa;
+        }
+        .metric-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+        /* ── EXPLANATION BOX ── */
+        .explanation-box {
+            font-size: 13.5px;
+            line-height: 1.8;
+            color: #cbd5e1;
+            background: rgba(124,58,237,0.06);
+            border: 1px solid rgba(124,58,237,0.18);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+        }
+        body.light .explanation-box { color: #374151; background: rgba(79,70,229,0.05); }
+
+        /* ── FEEDBACK BUTTONS ── */
+        .feedback-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .fb-btn {
+            padding: 9px 22px;
+            border-radius: 50px;
+            border: none;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .fb-btn:hover { opacity: 0.8; transform: scale(0.97); }
+        .fb-correct   { background: rgba(34,197,94,0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .fb-incorrect { background: rgba(239,68,68,0.13);  color: #f87171; border: 1px solid rgba(239,68,68,0.28); }
+        .fb-unknown   { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.22); }
+
+        /* ── RUN TI BTN ── */
+        .run-ti-btn {
+            padding: 9px 22px;
+            border-radius: 50px;
+            border: none;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .run-ti-btn:hover { opacity: 0.85; transform: scale(0.97); }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fu1 { animation: fadeUp 0.4s 0.05s ease both; }
+        .fu2 { animation: fadeUp 0.4s 0.12s ease both; }
+        .fu3 { animation: fadeUp 0.4s 0.18s ease both; }
+        .fu4 { animation: fadeUp 0.4s 0.24s ease both; }
+        .fu5 { animation: fadeUp 0.4s 0.30s ease both; }
+        .fu6 { animation: fadeUp 0.4s 0.36s ease both; }
+    </style>
+</head>
+<body>
+
+<!-- ════ NAVBAR ════ -->
+<nav class="nav">
+    <a class="logo-text" href="/dashboard">NETRA-AI</a>
+    <div class="nav-right">
+        <div class="nav-icons">
+            <span title="Analytics">📊</span>
+            <span title="Notifications">🔔</span>
+            <span title="Settings">⚙️</span>
+        </div>
+        <div class="user-menu" id="userMenu">
+            <div class="user-badge" onclick="toggleMenu()">
+                <span class="user-icon-char" th:text="${isAdmin} ? '👑' : '👤'">👤</span>
+                <span th:text="${username} ?: 'User'">User</span>
+                <span style="font-size:10px;opacity:0.5;margin-left:2px;">▾</span>
+            </div>
+            <div class="dropdown">
+                <div th:if="${isAdmin}">
+                    <div class="dropdown-header">Admin Panel</div>
+                    <a class="dropdown-item" href="/admin/pending"><span class="di-icon">✅</span> User Approvals</a>
+                    <a class="dropdown-item" href="/admin-ui/ti"><span class="di-icon">🛡️</span> TI Control Panel</a>
+                    <a class="dropdown-item" href="/admin-ui/audit"><span class="di-icon">📋</span> Audit Logs</a>
+                    <a class="dropdown-item" href="/admin-ui/keys"><span class="di-icon">🔑</span> API Key Management</a>
+                    <div class="dropdown-divider"></div>
+                </div>
+                <a class="dropdown-item" href="/dashboard"><span class="di-icon">🏠</span> Dashboard</a>
+                <div class="dropdown-divider"></div>
+                <form th:action="@{/logout}" method="post" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="dropdown-item danger"><span class="di-icon">🚪</span> Logout</button>
+                </form>
+            </div>
+        </div>
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <div class="toggle-circle" id="toggleCircle">🌙</div>
+        </div>
+    </div>
+</nav>
+
+<!-- ════ PAGE BODY ════ -->
+<div class="ti-page">
+
+    <!-- ── HERO ── -->
+    <div class="card ti-hero fu1">
+        <div>
+            <div style="font-size:11px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#6b7280; margin-bottom:6px;">
+                IP Investigation Report
+            </div>
+            <div class="ti-ip" th:text="${ip} ?: 'Unknown IP'">192.168.0.1</div>
+        </div>
+        <a class="ti-back" href="/dashboard">← Back to Dashboard</a>
+    </div>
+
+    <!-- ── VERDICT + CONFIDENCE ── -->
+    <div class="verdict-grid fu2">
+
+        <!-- Verdict -->
+        <div class="card verdict-main">
+            <div class="info-card-title">🔍 TI Verdict</div>
+
+            <div class="verdict-label-row">
+                <!-- From /run-ti (ti object) -->
+                <span th:if="${ti != null}"
+                      th:text="${ti.label}"
+                      th:class="${ti.label == 'malicious'} ? 'verdict-badge verdict-malicious'
+                               : (${ti.label == 'clean'} ? 'verdict-badge verdict-clean'
+                               : (${ti.label == 'suspicious'} ? 'verdict-badge verdict-suspicious'
+                               : 'verdict-badge verdict-unknown'))">
+                </span>
+                <!-- From /detail (data object) -->
+                <span th:if="${ti == null and data != null}"
+                      th:text="${data[0]['ti_label']} ?: 'Not Checked'"
+                      th:class="${data[0]['ti_label'] == 'malicious'} ? 'verdict-badge verdict-malicious'
+                               : (${data[0]['ti_label'] == 'clean'} ? 'verdict-badge verdict-clean'
+                               : 'verdict-badge verdict-unknown')">
+                </span>
+            </div>
+
+            <div class="confidence-bar-wrap">
+                <div class="confidence-label">Confidence Score</div>
+                <div class="confidence-value"
+                     th:text="${ti != null} ? ${ti.confidence} : ${data[0]['ti_confidence']}">—</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confFill" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div>
+                <div class="confidence-label" style="margin-bottom:8px;">Reasoning</div>
+                <div class="reasoning-text"
+                     th:text="${ti != null} ? ${ti.reasoning} : ${data[0]['ti_reasoning']}">
+                    No reasoning available.
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision summary (from detail page) -->
+        <div class="card info-card">
+            <div class="info-card-title">⚡ Decision Summary</div>
+
+            <div th:if="${data != null}">
+                <div class="info-row">
+                    <div class="info-key">Attack Type</div>
+                    <div class="info-val" th:text="${data[0]['attack_type']}">—</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Risk Score</div>
+                    <div class="info-val">
+                        <span th:with="score=${data[0]['risk_score']}"
+                              th:class="${score >= 80} ? 'risk-badge risk-high'
+                                       : (${score >= 50} ? 'risk-badge risk-medium'
+                                       : 'risk-badge risk-low')"
+                              th:text="${score}">—</span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Recommended Action</div>
+                    <div class="info-val" th:text="${data[0]['action']}">—</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Timestamp</div>
+                    <div class="info-val mono" th:text="${data[0]['timestamp']}">—</div>
+                </div>
+            </div>
+
+            <div th:if="${ti != null and data == null}" style="color:#6b7280; font-size:13px; padding:12px 0;">
+                Run from IP detail page to see full decision summary.
+            </div>
+
+            <!-- Run TI button -->
+            <div style="margin-top:16px;">
+                <form method="post" action="/run-ti" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <input type="hidden" name="ip" th:value="${ip}" />
+                    <button type="submit" class="run-ti-btn">🔄 Re-run TI</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── EXPLANATION ── -->
+    <div class="card info-card fu3" th:if="${data != null}">
+        <div class="info-card-title">📝 AI Explanation</div>
+        <div class="explanation-box" th:text="${data[0]['explanation']}">No explanation available.</div>
+    </div>
+
+    <!-- ── TECHNICAL METRICS ── -->
+    <div class="fu4" th:if="${data != null}">
+        <div class="metrics-grid">
+            <div class="card metric-card">
+                <div class="metric-val" th:text="${data[0]['request_freq']}">—</div>
+                <div class="metric-label">Request Freq</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-val" style="color:#f87171;" th:text="${data[0]['failed_ratio']}">—</div>
+                <div class="metric-label">Failed Ratio</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-val" style="color:#fbbf24;" th:text="${data[0]['unique_ports']}">—</div>
+                <div class="metric-label">Unique Ports</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-val" style="color:#f87171;" th:text="${data[0]['anomaly_score']}">—</div>
+                <div class="metric-label">Anomaly Score</div>
+            </div>
+            <div class="card metric-card">
+                <div class="metric-val" style="color:#22d3ee;"
+                     th:text="${data[0]['off_hour']} ? '⚠ Yes' : '✓ No'">—</div>
+                <div class="metric-label">Off-Hour Activity</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── USER FEEDBACK ── -->
+    <div class="card info-card fu5" th:if="${data != null}">
+        <div class="info-card-title">💬 Your Feedback</div>
+        <div style="font-size:12.5px; color:#6b7280; margin-bottom:14px;">
+            Was this TI classification correct? Your feedback helps improve the model.
+        </div>
+        <form method="post" action="/feedback" style="margin:0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="hidden" name="ip" th:value="${ip}" />
+            <div class="feedback-row">
+                <button type="submit" name="feedback" value="correct"   class="fb-btn fb-correct">✓ Correct</button>
+                <button type="submit" name="feedback" value="incorrect" class="fb-btn fb-incorrect">✕ Incorrect</button>
+                <button type="submit" name="feedback" value="unknown"   class="fb-btn fb-unknown">? Unknown</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── STANDALONE TI RESULT (no data object, only ti) ── -->
+    <div class="card info-card fu5" th:if="${ti != null and data == null}">
+        <div class="info-card-title">ℹ️ About This Result</div>
+        <div style="font-size:13px; color:#94a3b8; line-height:1.7;">
+            This result was generated from a direct TI lookup.
+            For the full investigation report including technical metrics, anomaly scores,
+            and AI explanation, visit the
+            <a th:href="@{'/detail/' + ${ip}}" style="color:#a78bfa; text-decoration:none; font-weight:600;">IP detail page →</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ── DROPDOWN ── */
+function toggleMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('userMenu');
+    if (menu && !menu.contains(e.target)) menu.classList.remove('open');
+});
+
+/* ── THEME TOGGLE ── */
+let dark = true;
+function toggleTheme() {
+    dark = !dark;
+    const circle = document.getElementById('toggleCircle');
+    if (!dark) {
+        document.body.classList.add('light');
+        circle.innerHTML = '☀️';
+        circle.style.transform = 'translateX(30px)';
+    } else {
+        document.body.classList.remove('light');
+        circle.innerHTML = '🌙';
+        circle.style.transform = 'translateX(0)';
+    }
+}
+
+/* ── CONFIDENCE BAR ANIMATION ── */
+window.addEventListener('load', function() {
+    const fill = document.getElementById('confFill');
+    if (!fill) return;
+    const valEl = document.querySelector('.confidence-value');
+    if (!valEl) return;
+    const raw = valEl.textContent.trim().replace('%','');
+    const pct = parseFloat(raw);
+    if (!isNaN(pct)) {
+        setTimeout(() => { fill.style.width = Math.min(pct * 100, 100) + '%'; }, 300);
+    }
+});
+</script>
+
+</body>
+</html>

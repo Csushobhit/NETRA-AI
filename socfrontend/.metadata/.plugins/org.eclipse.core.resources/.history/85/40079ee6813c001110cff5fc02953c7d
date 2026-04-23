@@ -1,0 +1,14 @@
+spring.application.name=socfrontend
+server.port=9202
+
+spring.datasource.url=jdbc:mysql://localhost:3306/soc_frontend
+spring.datasource.username=root
+spring.datasource.password=DEep@5515
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+spring.thymeleaf.cache=false

@@ -1,0 +1,5 @@
+package com.soc.socfrontend.model;
+
+public class User {
+
+}

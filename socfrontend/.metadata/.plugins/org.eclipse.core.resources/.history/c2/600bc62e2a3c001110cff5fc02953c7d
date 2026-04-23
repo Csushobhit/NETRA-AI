@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Alerts</title>
+</head>
+<body>
+
+<h2>Alerts</h2>
+
+<form method="get" action="/alerts">
+    <label>Filter:</label>
+    <select name="filter">
+        <option value="">All</option>
+        <option value="suspicious">Suspicious</option>
+    </select>
+
+    <label>Hours:</label>
+    <input type="number" name="hours" />
+
+    <button type="submit">Apply</button>
+</form>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>IP</th>
+            <th>Timestamp</th>
+            <th>Request Freq</th>
+            <th>Failed Ratio</th>
+            <th>Ports</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>TI</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr th:each="a : ${alerts}">
+            <td>
+                <a th:href="@{'/detail/' + ${a.ip}}" th:text="${a.ip}"></a>
+            </td>
+            <td th:text="${a.timestamp}"></td>
+            <td th:text="${a.request_freq}"></td>
+            <td th:text="${a.failed_ratio}"></td>
+            <td th:text="${a.unique_ports}"></td>
+            <td th:text="${a.anomaly_score}"></td>
+            <td th:text="${a.risk_score}"></td>
+            <td th:text="${a.ti_label}"></td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

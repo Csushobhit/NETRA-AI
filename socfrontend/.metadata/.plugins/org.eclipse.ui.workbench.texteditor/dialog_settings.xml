@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="java.lang.Class">
+		<item key="replaceBarOpen" value="false"/>
+		<list key="findhistory">
+			<item value=".alert-table"/>
+			<item value=".table-wrapper"/>
+			<item value=".card"/>
+			<item value="graphs-grid"/>
+			<item value="grid-template-columns"/>
+			<item value=".graphs-grid"/>
+			<item value="grid-"/>
+			<item value=".kpi-card"/>
+			<item value=".kpi-card ca"/>
+			<item value=".kpi-spark"/>
+		</list>
+	</section>
+</section>

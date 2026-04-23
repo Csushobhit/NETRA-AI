@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: radial-gradient(circle at center, #1a1a1a, #000000);
+    overflow: hidden;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 60px;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+}
+
+.nav-links a {
+    margin: 0 10px;
+    color: #ccc;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.auth-buttons button {
+    margin-left: 10px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+}
+
+.login-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid #555;
+}
+
+.signup-btn {
+    background: white;
+    color: black;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.cta-btn {
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: none;
+    background: white;
+    color: black;
+}
+
+/* LOGIN CARD */
+.login-card {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    width: 250px;
+}
+
+.login-card input {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+.login-card button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: white;
+    color: black;
+}

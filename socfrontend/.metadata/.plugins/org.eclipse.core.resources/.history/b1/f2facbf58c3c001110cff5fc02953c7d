@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NETRA-AI — Bulk TI Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+
+    <style>
+        /* ── SUMMARY PILLS ── */
+        .summary-strip {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .summary-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .pill-total     { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.35); color: #a78bfa; }
+        .pill-malicious { background: rgba(239,68,68,0.12);   border-color: rgba(239,68,68,0.35);   color: #f87171; }
+        .pill-clean     { background: rgba(34,197,94,0.11);   border-color: rgba(34,197,94,0.30);   color: #4ade80; }
+
+        /* ── CONFIDENCE BAR ── */
+        .conf-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 140px;
+        }
+
+        .conf-bar-bg {
+            flex: 1;
+            height: 6px;
+            border-radius: 99px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+
+        .conf-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+        }
+
+        .conf-pct {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 38px;
+            text-align: right;
+            color: #94a3b8;
+        }
+
+        /* ── IP CELL ── */
+        .ip-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #67e8f9;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+        body.light .ip-cell { color: #0284c7; }
+
+        /* ── JUSTIFICATION ── */
+        .justification-text {
+            font-size: 12.5px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        body.light .justification-text { color: #64748b; }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 64px 20px;
+            color: #6b7280;
+        }
+        .empty-icon { font-size: 44px; margin-bottom: 14px; }
+        .empty-state p { font-size: 14px; }
+
+        /* ── PAGE HEADER ROW ── */
+        .page-header-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* ── BACK BUTTON ── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-bd);
+            background: var(--glass-bg);
+            color: inherit;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            backdrop-filter: blur(14px);
+            white-space: nowrap;
+            transition: background 0.2s, transform 0.2s;
+            flex-shrink: 0;
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.10);
+            transform: translateX(-3px);
+        }
+        body.light .back-btn { background: rgba(255,255,255,0.55); color: #1e293b; }
+
+        /* ── COUNT BADGE ── */
+        .count-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 50px;
+            background: rgba(124,58,237,0.12);
+            border: 1px solid rgba(124,58,237,0.30);
+            color: #a78bfa;
+        }
+
+        /* ── LABEL BADGE (reuse .badge from admin.css) ── */
+        .badge-malicious { background: rgba(239,68,68,0.14);  color: #f87171; border: 1px solid rgba(239,68,68,0.28); }
+        .badge-clean     { background: rgba(34,197,94,0.11);  color: #4ade80; border: 1px solid rgba(34,197,94,0.22); }
+        .badge-unknown   { background: rgba(245,158,11,0.14); color: #fbbf24; border: 1px solid rgba(245,158,11,0.28); }
+
+        /* ── WIDER TABLE ── */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .results-table colgroup col:nth-child(1) { width: 150px; }
+        .results-table colgroup col:nth-child(2) { width: 130px; }
+        .results-table colgroup col:nth-child(3) { width: 180px; }
+        .results-table colgroup col:nth-child(4) { width: auto;  }
+
+        .results-table thead th {
+            text-align: left;
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+            color: #6b7280;
+            padding: 0 14px 14px;
+            border-bottom: 1px solid var(--glass-bd);
+        }
+
+        .results-table tbody tr { transition: background 0.18s; }
+        .results-table tbody tr:hover { background: rgba(255,255,255,0.04); }
+        body.light .results-table tbody tr:hover { background: rgba(0,0,0,0.03); }
+
+        .results-table tbody td {
+            padding: 15px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: middle;
+        }
+        body.light .results-table tbody td { border-bottom: 1px solid rgba(0,0,0,0.06); }
+
+        /* last row no border */
+        .results-table tbody tr:last-child td { border-bottom: none; }
+    </style>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════════════
+     NAVBAR  (matches admin pages exactly)
+════════════════════════════════════════════ -->
+<nav class="nav">
+    <a class="logo-text" href="/dashboard">NETRA-AI</a>
+
+    <div class="nav-right">
+
+        <div class="nav-icons">
+            <span title="Analytics">📊</span>
+            <span title="Notifications">🔔</span>
+            <span title="Settings">⚙️</span>
+        </div>
+
+        <!-- User menu with dropdown -->
+        <div class="user-menu" id="userMenu">
+            <div class="user-badge" onclick="toggleMenu()">
+                <span class="user-icon-char" th:text="${isAdmin} ? '👑' : '👤'">👤</span>
+                <span th:text="${username} ?: 'User'">User</span>
+                <span style="font-size:10px;opacity:0.5;margin-left:2px;">▾</span>
+            </div>
+
+            <div class="dropdown">
+                <!-- Admin links -->
+                <div th:if="${isAdmin}">
+                    <div class="dropdown-header">Admin Panel</div>
+                    <a class="dropdown-item" href="/admin/pending">
+                        <span class="di-icon">✅</span> User Approvals
+                    </a>
+                    <a class="dropdown-item" href="/admin-ui/ti">
+                        <span class="di-icon">🛡️</span> TI Control Panel
+                    </a>
+                    <a class="dropdown-item" href="/admin-ui/audit">
+                        <span class="di-icon">📋</span> Audit Logs
+                    </a>
+                    <a class="dropdown-item" href="/admin-ui/keys">
+                        <span class="di-icon">🔑</span> API Key Management
+                    </a>
+                    <div class="dropdown-divider"></div>
+                </div>
+
+                <form th:action="@{/logout}" method="post" style="margin:0;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="dropdown-item danger">
+                        <span class="di-icon">🚪</span> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <div class="toggle-circle" id="toggleCircle">🌙</div>
+        </div>
+
+    </div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     PAGE BODY
+════════════════════════════════════════════ -->
+<div class="page-body">
+
+    <!-- ── PAGE HEADER ── -->
+    <div class="page-header-row fade-up">
+        <div>
+            <div class="page-title">Bulk TI <span>Results</span></div>
+            <div class="page-subtitle">Threat intelligence analysis for selected IP addresses</div>
+        </div>
+        <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <!-- ── SUMMARY PILLS ── -->
+    <div class="summary-strip fade-up">
+        <div class="summary-pill pill-total">
+            🔍 Total Scanned:
+            <strong th:text="${results != null ? results.size() : 0}">0</strong>
+        </div>
+        <div class="summary-pill pill-malicious">
+            ⚠ Malicious:
+            <strong th:text="${results != null ? #lists.size(results.?[label == 'malicious']) : 0}">0</strong>
+        </div>
+        <div class="summary-pill pill-clean">
+            ✔ Clean:
+            <strong th:text="${results != null ? #lists.size(results.?[label == 'clean']) : 0}">0</strong>
+        </div>
+    </div>
+
+    <!-- ── RESULTS CARD ── -->
+    <div class="card admin-table-wrap fade-up">
+
+        <div class="section-header">
+            <span class="section-title">TI Analysis Report</span>
+            <span class="count-badge"
+                  th:text="${results != null ? results.size() + ' IP' + (results.size() != 1 ? 's' : '') : '0 IPs'}">
+                0 IPs
+            </span>
+        </div>
+
+        <!-- Empty state -->
+        <div th:if="${results == null or results.isEmpty()}" class="empty-state">
+            <div class="empty-icon">🛡️</div>
+            <p>No results to display. Select IPs from the dashboard and run Bulk TI.</p>
+        </div>
+
+        <!-- Results table -->
+        <table th:if="${results != null and !results.isEmpty()}" class="results-table">
+            <colgroup>
+                <col /><col /><col /><col />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>IP Address</th>
+                    <th>TI Label</th>
+                    <th>Confidence</th>
+                    <th>Agent Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${results}">
+
+                    <!-- IP -->
+                    <td class="ip-cell" th:text="${r.ip}">192.168.0.1</td>
+
+                    <!-- Label -->
+                    <td>
+                        <span class="badge"
+                              th:classappend="${r.label == 'malicious'} ? ' badge-malicious'
+                                            : (${r.label == 'clean'} ? ' badge-clean'
+                                            : ' badge-unknown')"
+                              th:text="${r.label != null ? r.label : 'unknown'}">
+                            unknown
+                        </span>
+                    </td>
+
+                    <!-- Confidence bar -->
+                    <td>
+                        <div class="conf-wrap">
+                            <div class="conf-bar-bg">
+                                <div class="conf-bar-fill"
+                                     th:style="'width:' + ${r.confidence != null ? r.confidence : 0} + '%;' +
+                                               'background:' + (${r.label == 'malicious'} ? '#ef4444'
+                                                             : (${r.label == 'clean'}     ? '#22c55e'
+                                                             : '#f59e0b')) + ';'">
+                                </div>
+                            </div>
+                            <span class="conf-pct"
+                                  th:text="${r.confidence != null ? r.confidence : 0} + '%'">0%</span>
+                        </div>
+                    </td>
+
+                    <!-- Justification -->
+                    <td>
+                        <span class="justification-text"
+                              th:text="${r.justification != null and !r.justification.isEmpty()} ? r.justification : 'No justification provided.'">
+                            No justification provided.
+                        </span>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div><!-- end .page-body -->
+
+<script>
+/* ── DROPDOWN MENU ── */
+function toggleMenu() {
+    document.getElementById('userMenu').classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('userMenu');
+    if (menu && !menu.contains(e.target)) menu.classList.remove('open');
+});
+
+/* ── THEME TOGGLE ── */
+let dark = true;
+
+function toggleTheme() {
+    dark = !dark;
+    const circle = document.getElementById('toggleCircle');
+    if (!dark) {
+        document.body.classList.add('light');
+        circle.innerHTML = '☀️';
+        circle.style.transform = 'translateX(30px)';
+    } else {
+        document.body.classList.remove('light');
+        circle.innerHTML = '🌙';
+        circle.style.transform = 'translateX(0)';
+    }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Audit Logs</title>
+</head>
+<body>
+
+<h2>Audit Logs</h2>
+
+<a href="/dashboard">Dashboard</a>
+
+<table border="1">
+    <tr>
+        <th>Action</th>
+        <th>IP</th>
+        <th>Index</th>
+        <th>Status</th>
+    </tr>
+
+    <tr th:each="l : ${logs}">
+        <td th:text="${l.action}"></td>
+        <td th:text="${l.ip}"></td>
+        <td th:text="${l.index}"></td>
+        <td th:text="${l.status}"></td>
+    </tr>
+
+</table>
+
+</body>
+</html>

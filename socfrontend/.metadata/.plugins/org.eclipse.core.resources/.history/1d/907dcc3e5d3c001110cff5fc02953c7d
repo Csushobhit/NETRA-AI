@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- IMPORTANT -->
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="nav">
+
+    <div class="logo-text">NETRA-AI</div>
+
+    <div class="nav-right">
+
+        <div class="theme-toggle" onclick="toggleTheme()">
+            <div class="toggle-circle" id="toggleCircle">🌙</div>
+        </div>
+
+        <div class="user-menu">
+
+            <span class="user-icon" th:text="${isAdmin} ? '👑' : '👤'"></span>
+
+            <div class="dropdown">
+
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit">Logout</button>
+                </form>
+
+                <div th:if="${isAdmin}">
+                    <a href="/admin/pending">Approvals</a>
+                    <a href="/admin-ui/ti">TI Control</a>
+                    <a href="/admin-ui/audit">Audit</a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- TI SEARCH -->
+<div class="top-bar">
+    <form action="/search-ti" method="get">
+        <input type="text" name="ip" placeholder="Search IP..." required />
+        <button type="submit">Run TI</button>
+    </form>
+</div>
+
+<!-- KPI -->
+<div class="kpi">
+
+    <div class="card">
+        <h4>Total Alerts</h4>
+        <p th:text="${stats.total}"></p>
+    </div>
+
+    <div class="card">
+        <h4>High Risk</h4>
+        <p th:text="${stats.suspicious}"></p>
+    </div>
+
+    <div class="card">
+        <h4>TI Malicious</h4>
+        <p th:text="${stats.ti_malicious}"></p>
+    </div>
+
+    <div class="card">
+        <h4>Normal</h4>
+        <p th:text="${stats.normal}"></p>
+    </div>
+
+</div>
+
+<!-- GRAPHS -->
+<div class="graphs">
+
+    <div class="card large">
+        Alert Trend
+    </div>
+
+    <div class="card">
+        Risk Distribution
+    </div>
+
+    <div class="card">
+        Top IPs
+    </div>
+
+</div>
+
+<!-- ALERT TABLE -->
+<div class="table-section">
+
+    <div class="table-header">
+        <input type="text" placeholder="Search IP...">
+    </div>
+
+    <!-- BULK FORM -->
+    <form method="post" action="/bulk-ti">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>IP</th>
+                    <th>Time</th>
+                    <th>Risk</th>
+                    <th>Attack</th>
+                    <th>TI</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr th:each="a : ${alerts}">
+
+                    <td>
+                        <input type="checkbox" name="ips" th:value="${a['ip']}">
+                    </td>
+
+                    <td>
+                        <a th:href="@{'/detail/' + ${a['ip']}}" th:text="${a['ip']}"></a>
+                    </td>
+
+                    <td th:text="${a['timestamp']}"></td>
+
+                    <td th:text="${a['risk_score']}"></td>
+
+                    <td th:text="${a['action']}"></td>
+
+                    <td th:text="${a['ti_label'] != null ? a['ti_label'] : 'Not Checked'}"></td>
+
+                    <td>
+                        <!-- FIXED: NO nested form -->
+                        <button type="button"
+                                th:attr="onclick=|runSingleTI('${a['ip']}')|">
+                            Run TI
+                        </button>
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <button type="submit">Run Bulk TI</button>
+
+    </form>
+
+</div>
+
+<!-- HIDDEN FORM FOR SINGLE TI -->
+<form id="singleTIForm" method="post" action="/run-ti" style="display:none;">
+    <input type="hidden" name="ip" id="singleIP">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+</form>
+
+<script>
+
+function toggleTheme() {
+    document.body.classList.toggle("light");
+
+    const circle = document.getElementById("toggleCircle");
+
+    if (document.body.classList.contains("light")) {
+        circle.innerHTML = "☀️";
+        circle.style.transform = "translateX(30px)";
+    } else {
+        circle.innerHTML = "🌙";
+        circle.style.transform = "translateX(0px)";
+    }
+}
+
+/* SINGLE TI FIX */
+function runSingleTI(ip) {
+    document.getElementById("singleIP").value = ip;
+    document.getElementById("singleTIForm").submit();
+}
+
+</script>
+
+</body>
+</html>
