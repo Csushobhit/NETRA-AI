@@ -306,8 +306,6 @@ mindmap
 
 ## 🖼️ Screenshots
 
-> 📸 Save your screenshots in the `assets/screenshots/` folder and update the paths below.
-
 ### Landing Page
 <!-- ============================================================ -->
 <!-- 📸 PHOTO PLACEHOLDER: Admin control panel                   -->
