@@ -1,5 +1,0 @@
-package com.soc.socfrontend.config;
-
-public class SecurityConfig {
-
-}
